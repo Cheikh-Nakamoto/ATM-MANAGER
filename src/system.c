@@ -384,13 +384,12 @@ void CheckAccount(struct User u)
                     boole = 1;
                     printf("Account Number : %s\nDeposit Date: %d/%d/%d\n Country : %s\n Phone Number : %s\n Amount Deposited %s \n Type of Account: %s",
                            r.accountNbr, r.deposit.month, r.deposit.day, r.deposit.year, r.country, r.phone, r.amount, r.accountType);
-                    break;
+                     fclose(pf);
+                    success(u);
                 }
             }
         }
-        fclose(pf);
     } while (boole == 0);
-    success(u);
 }
 
 int StrVerify(char str[])
