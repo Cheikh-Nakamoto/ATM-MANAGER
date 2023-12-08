@@ -247,6 +247,7 @@ void Modify(struct Record cr, int choice)
     FILE *newFILE = fopen("data/backup.txt", "w");
     struct Record r;
     struct User u;
+    struct Record cr;
     char username[50];
     while (getAccountFromFile(pf, username, &r))
     {
@@ -254,7 +255,7 @@ void Modify(struct Record cr, int choice)
         strcpy(u.name, r.name);
         // u.name -> r.name;
         printf("sender%s\tfichier:%s", r.accountNbr, cr.accountNbr);
-        if (strcmp(r.accountNbr, cr.accountNbr) == 0)
+        if (strcmp(r.accountNbr, cr.accountNbr) == 0 && strcmp(u.name,cr.name))
         {
             switch (choice)
             {
