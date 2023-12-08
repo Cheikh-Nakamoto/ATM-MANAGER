@@ -40,7 +40,8 @@ int StrVerify(char s[]);
 bool CheckSaving(char str[]);
 bool CheckDate(struct Record r);
 bool CheckYear(int year);
-void Modify(FILE *pf, struct Record cr, int choice);
+void Modify(struct Record cr, int choice);
+void CheckAccount(struct User u);
 
 
 // system function

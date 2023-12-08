@@ -2,6 +2,7 @@
 #include "stdbool.h"
 
 const char *RECORDS = "./data/records.txt";
+char Username[50];
 
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
@@ -239,8 +240,9 @@ void checkAllAccounts(struct User u)
     success(u);
 }
 
-void Modify(FILE *pf, struct Record cr, int choice)
+void Modify(struct Record cr, int choice)
 {
+    FILE *pf = fopen(RECORDS, "r");
     // FILE *oldFILE = fopen("data/records.txt", "r");
     FILE *newFILE = fopen("data/backup.txt", "w");
     struct Record r;
@@ -251,6 +253,7 @@ void Modify(FILE *pf, struct Record cr, int choice)
         u.id = r.userId;
         strcpy(u.name, r.name);
         // u.name -> r.name;
+        printf("sender%s\tfichier:%s", r.accountNbr, cr.accountNbr);
         if (strcmp(r.accountNbr, cr.accountNbr) == 0)
         {
             switch (choice)
@@ -263,52 +266,77 @@ void Modify(FILE *pf, struct Record cr, int choice)
                     printf("✖ Phone number is not valid\n\n");
                 }
                 saveAccountToFile(newFILE, u, r);
+            case 2:
+                do
+                {
+                    printf("Enter the Country: ");
+                    scanf("%s", r.country);
+                    if (StrVerify(r.country))
+                    {
+                        printf("✖ Country name is not valid\n\n");
+                    }
+                } while (StrVerify(r.country));
+                saveAccountToFile(newFILE, u, r);
             }
-        }else{
+        }
+        else
+        {
 
-        saveAccountToFile(newFILE, u, r);
+            saveAccountToFile(newFILE, u, r);
         }
     }
+    fclose(pf);
+    fclose(newFILE);
+    remove(RECORDS);
+    rename("data/backup.txt", "data/records.txt");
+    success(u);
 }
 
-void UpdateAccount()
+void UpdateAccount(struct User u)
 {
     system("clear");
     char userName[100];
     struct Record cr;
     struct Record r;
-    FILE *pf = fopen(RECORDS, "r");
-    printf("\n\t\t-->> Enter your Account number\n");
-    if (scanf("%s", r.accountNbr) == 1)
+    int boole = 0;
+    do
     {
-         int boole = 0;
-        while (getAccountFromFile(pf, userName, &cr))
+        FILE *pf = fopen(RECORDS, "r");
+        printf("\n\t\t-->> Enter your Account number\n");
+        if (scanf("%s", r.accountNbr) == 1)
         {
-            if ((strcmp(r.accountNbr, cr.accountNbr) == 0) && userName == r.name)
+            while (getAccountFromFile(pf, userName, &cr))
             {
-                int choice = 0;
-                printf("[1]- Phone Number\n");
-                printf("[2]- Country\n");
-                if (scanf("%d", &choice) == 1)
+                if ((strcmp(r.accountNbr, cr.accountNbr) == 0) && strcmp(u.name, cr.name) == 0)
                 {
-                    switch (choice)
+                    boole = 1;
+                    int choice = 0;
+                    printf("[1]- Phone Number\n");
+                    printf("[2]- Country\n");
+                    if (scanf("%d", &choice) == 1)
                     {
-                    case 1:
-                        Modify(pf, r, choice);
-                        break;
-                    case 2:
-                        Modify(pf, r, choice);
-                        break;
-                    default:
-                        break;
+                        switch (choice)
+                        {
+                        case 1:
+                            Modify(r, choice);
+                            break;
+                        case 2:
+                            Modify(r, choice);
+                            break;
+                        default:
+                            break;
+                        }
                     }
                 }
             }
+            if (boole == 0)
+            {
+                printf("this number account does not match your account number\n");
+            }
+            printf("%d\n", boole);
+            fclose(pf);
         }
-        if (boole == 0){
-            printf("this number account does not match your account number\n");
-        }
-    }
+    } while (boole == 0);
 }
 
 int getID()
@@ -331,6 +359,34 @@ int getID()
     }
     fclose(fp);
     return ID;
+}
+
+void CheckAccount(struct User u)
+{
+    system("clear");
+    char userName[100];
+    struct Record cr;
+    struct Record r;
+    int boole = 0;
+    do
+    {
+        FILE *pf = fopen(RECORDS, "r");
+        printf("\n\t\t-->> Enter your Account number\n");
+        if (scanf("%s", r.accountNbr) == 1)
+        {
+            while (getAccountFromFile(pf, userName, &cr))
+            {
+                if ((strcmp(r.accountNbr, cr.accountNbr) == 0) && strcmp(u.name, cr.name) == 0)
+                {
+                    boole = 1;
+                    printf("Account Number : %s\nDeposit Date: %d/%d/%d\n Country : %s\n Phone Number : %s\n Amount Deposited %s \n Type of Account: %s",
+                           r.accountNbr, r.deposit.month, r.deposit.day, r.deposit.year, r.country, r.phone, r.amount, r.accountType);
+                }
+            }
+        }
+        fclose(pf);
+    } while (boole == 0);
+    success(u);
 }
 
 int StrVerify(char str[])
