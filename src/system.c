@@ -266,6 +266,7 @@ void Modify(struct Record cr, int choice)
                     printf("✖ Phone number is not valid\n\n");
                 }
                 saveAccountToFile(newFILE, u, r);
+                break;
             case 2:
                 do
                 {
@@ -277,6 +278,7 @@ void Modify(struct Record cr, int choice)
                     }
                 } while (StrVerify(r.country));
                 saveAccountToFile(newFILE, u, r);
+                break;
             }
         }
         else
