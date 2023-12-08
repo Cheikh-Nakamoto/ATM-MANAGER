@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 struct Date
 {
@@ -16,8 +17,8 @@ struct Record
     char country[100];
     char phone[15];
     char accountType[10];
-    int accountNbr;
-    double amount;
+    char  accountNbr[10];
+    char amount[256];
     struct Date deposit;
     struct Date withdraw;
 };
@@ -36,8 +37,14 @@ const char *getPassword(struct User u);
 int getID();
 int IntVerify(char s[]);
 int StrVerify(char s[]);
+bool CheckSaving(char str[]);
+bool CheckDate(struct Record r);
+bool CheckYear(int year);
+void Modify(FILE *pf, struct Record cr, int choice);
+
 
 // system function
 void createNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
+void UpdateAccount();

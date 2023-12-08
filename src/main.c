@@ -14,7 +14,7 @@ void mainMenu(struct User u)
     printf("\n\t\t[6]- Remove existing account\n");
     printf("\n\t\t[7]- Transfer ownership\n");
     printf("\n\t\t[8]- Exit\n");
-    scanf("%d", &option);
+    scanf("%d", &option);   
 
     switch (option)
     {
@@ -22,7 +22,7 @@ void mainMenu(struct User u)
         createNewAcc(u);
         break;
     case 2:
-        getID();
+        UpdateAccount();
         // student TODO : add your **Update account information** function
         // here
         break;

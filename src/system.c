@@ -1,26 +1,27 @@
 #include "header.h"
+#include "stdbool.h"
 
 const char *RECORDS = "./data/records.txt";
 
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r)
 {
-    return fscanf(ptr, "%d %d %s %d %d/%d/%d %s %s %lf %s",
+    return fscanf(ptr, "%d %d %s %s %d/%d/%d %s %s %s %s",
                   &r->id,
                   &r->userId,
                   r->name,
-                  &r->accountNbr,
+                  r->accountNbr,
                   &r->deposit.month,
                   &r->deposit.day,
                   &r->deposit.year,
                   r->country,
                   r->phone,
-                  &r->amount,
+                  r->amount,
                   r->accountType) != EOF;
 }
 
 void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
 {
-    fprintf(ptr, "%d %d %s %d %d/%d/%d %s %s %.2lf %s\n\n",
+    fprintf(ptr, "%d %d %s %s %02d/%02d/%d %s %s %s %s\n\n",
             r.id,
             u.id,
             u.name,
@@ -106,32 +107,59 @@ void createNewAcc(struct User u)
 noAccount:
     system("clear");
     printf("\t\t\t===== New record =====\n");
-
-    printf("\nEnter today's date(mm/dd/yyyy):");
-    scanf("%d/%d/%d", &r.deposit.month, &r.deposit.day, &r.deposit.year);
-
-    int boole = 1;
     do
     {
+        int boole = 1;
+        printf("\nEnter today's date(mm/dd/yyyy):");
+        if (scanf("%d/%d/%d", &r.deposit.month, &r.deposit.day, &r.deposit.year) == 3)
+        {
+            if (!CheckDate(r))
+            {
+                printf("✖ Date is not valid\n\n");
+            }
+        }
+        else
+        {
+            while (getchar() != '\n')
+            {
+                boole = 0;
+            }
+            if (boole == 0)
+            {
+                printf("Enter the date in the correct format!\n");
+            }
+        }
+    } while (!CheckDate(r));
+
+    int boole = 0;
+    do
+    {
+        FILE *f = fopen(RECORDS, "r");
         printf("\nEnter the account number:");
-        scanf("%d", &r.accountNbr);
-        while (getAccountFromFile(pf, userName, &cr))
+        scanf("%s", r.accountNbr);
+        printf("%d\n", IntVerify(r.accountNbr));
+        while (getAccountFromFile(f, userName, &cr))
 
         {
-            if (cr.accountNbr == r.accountNbr)
+            printf("%s\n", cr.accountNbr);
+            if (strcmp(cr.accountNbr, r.accountNbr) == 0)
             {
                 boole = 0;
                 break;
             }
             else
             {
-                boole = 1;
+                if ((IntVerify(r.accountNbr)))
+                {
+                    boole = 1;
+                }
             }
         }
         if (boole == 0)
         {
             printf("✖ This Account already exists for this user\n\n");
         }
+        fclose(f);
 
         /* code */
     } while (boole == 0);
@@ -149,16 +177,31 @@ noAccount:
     {
         printf("\nEnter the phone number:");
         scanf("%s", r.phone);
-        if (IntVerify(r.phone))
+        if (!IntVerify(r.phone))
         {
             printf("✖ Phone number is not valid\n\n");
         }
-    } while (IntVerify(r.phone));
+    } while (!IntVerify(r.phone));
 
-    printf("\nEnter amount to deposit: $");
-    scanf("%lf", &r.amount);
-    printf("\nChoose the type of account:\n\t-> saving\n\t-> current\n\t-> fixed01(for 1 year)\n\t-> fixed02(for 2 years)\n\t-> fixed03(for 3 years)\n\n\tEnter your choice:");
-    scanf("%s", r.accountType);
+    do
+    {
+        printf("\nEnter amount to deposit: $");
+        scanf("%s", r.amount);
+        if (!IntVerify(r.amount))
+        {
+            printf("✖ Amount is not valid\n\n");
+        }
+    } while (!IntVerify(r.amount));
+    do
+    {
+        printf("\nChoose the type of account:\n\t-> saving\n\t-> current\n\t-> fixed01(for 1 year)\n\t-> fixed02(for 2 years)\n\t-> fixed03(for 3 years)\n\n\tEnter your choice:");
+        scanf("%s", r.accountType);
+        if (!CheckSaving(r.accountType))
+        {
+            printf("✖ Account type is not valid\n\n");
+        }
+    } while (!CheckSaving(r.accountType));
+
     r.id = getID() + 1;
 
     saveAccountToFile(pf, u, r);
@@ -181,7 +224,7 @@ void checkAllAccounts(struct User u)
         if (strcmp(userName, u.name) == 0)
         {
             printf("_____________________\n");
-            printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%s \nAmount deposited: $%.2f \nType Of Account:%s\n",
+            printf("\nAccount number:%s\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%s \nAmount deposited: $%s \nType Of Account:%s\n",
                    r.accountNbr,
                    r.deposit.day,
                    r.deposit.month,
@@ -196,6 +239,78 @@ void checkAllAccounts(struct User u)
     success(u);
 }
 
+void Modify(FILE *pf, struct Record cr, int choice)
+{
+    // FILE *oldFILE = fopen("data/records.txt", "r");
+    FILE *newFILE = fopen("data/backup.txt", "w");
+    struct Record r;
+    struct User u;
+    char username[50];
+    while (getAccountFromFile(pf, username, &r))
+    {
+        u.id = r.userId;
+        strcpy(u.name, r.name);
+        // u.name -> r.name;
+        if (strcmp(r.accountNbr, cr.accountNbr) == 0)
+        {
+            switch (choice)
+            {
+            case 1:
+                printf("Enter the new phone number:");
+                scanf("%s", r.phone);
+                if (!IntVerify(r.phone))
+                {
+                    printf("✖ Phone number is not valid\n\n");
+                }
+                saveAccountToFile(newFILE, u, r);
+            }
+        }else{
+
+        saveAccountToFile(newFILE, u, r);
+        }
+    }
+}
+
+void UpdateAccount()
+{
+    system("clear");
+    char userName[100];
+    struct Record cr;
+    struct Record r;
+    FILE *pf = fopen(RECORDS, "r");
+    printf("\n\t\t-->> Enter your Account number\n");
+    if (scanf("%s", r.accountNbr) == 1)
+    {
+         int boole = 0;
+        while (getAccountFromFile(pf, userName, &cr))
+        {
+            if ((strcmp(r.accountNbr, cr.accountNbr) == 0) && userName == r.name)
+            {
+                int choice = 0;
+                printf("[1]- Phone Number\n");
+                printf("[2]- Country\n");
+                if (scanf("%d", &choice) == 1)
+                {
+                    switch (choice)
+                    {
+                    case 1:
+                        Modify(pf, r, choice);
+                        break;
+                    case 2:
+                        Modify(pf, r, choice);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+        }
+        if (boole == 0){
+            printf("this number account does not match your account number\n");
+        }
+    }
+}
+
 int getID()
 {
     FILE *fp;
@@ -207,7 +322,7 @@ int getID()
         exit(1);
     }
     int ID = 0;
-    while (fscanf(fp, "%d %d %s %d %d/%d/%d %s %s %lf %s", &inf.id, &inf.userId, inf.name, &inf.accountNbr, &inf.deposit.month, &inf.deposit.day, &inf.deposit.year, inf.country, inf.phone, &inf.amount, inf.accountType) != EOF)
+    while (fscanf(fp, "%d %d %s %s %d/%d/%d %s %s %s %s", &inf.id, &inf.userId, inf.name, inf.accountNbr, &inf.deposit.month, &inf.deposit.day, &inf.deposit.year, inf.country, inf.phone, inf.amount, inf.accountType) != EOF)
     {
         if (inf.id > ID)
         {
@@ -236,8 +351,43 @@ int IntVerify(char str[])
     {
         if (!(str[i] >= 48 && str[i] <= 57))
         {
-            return 1;
+            return 0;
         }
-        return 0;
     }
+    return 1;
+}
+
+bool CheckSaving(char str[])
+{
+    if (strcmp(str, "saving") == 0 || strcmp(str, "current") == 0 || strcmp(str, "fixed01") == 0 || strcmp(str, "fixed02") == 0 || strcmp(str, "fixed03") == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool CheckDate(struct Record r)
+{
+    int jour = r.deposit.day;
+    int mois = r.deposit.month;
+    int année = r.deposit.year;
+
+    if (!(mois < 1 || mois > 12 || jour < 1 || jour > 31 || année < 1960 || année > 2023))
+    {
+        if ((mois == 2 && jour > 28 && !CheckYear(année)) || (mois == 2 && jour > 29 && CheckYear(année)))
+        {
+            return false;
+        }
+        if ((mois == 4 || mois == 6 || mois == 9 || mois == 11) && jour > 30)
+        {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool CheckYear(int year)
+{
+    return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
 }
