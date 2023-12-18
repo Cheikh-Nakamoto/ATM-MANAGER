@@ -240,22 +240,24 @@ void checkAllAccounts(struct User u)
     success(u);
 }
 
-void Modify(struct Record cr, int choice)
+
+void Modify(struct User u,struct Record cr, int choice)
 {
     FILE *pf = fopen(RECORDS, "r");
     // FILE *oldFILE = fopen("data/records.txt", "r");
     FILE *newFILE = fopen("data/backup.txt", "w");
     struct Record r;
-    struct User u;
-    struct Record cr;
+    // struct User u;
+    // struct Record cr;
     char username[50];
     while (getAccountFromFile(pf, username, &r))
     {
-        u.id = r.userId;
-        strcpy(u.name, r.name);
+        printf("%s",u.name);
+        // u.id = r.userId;
+        // strcpy(u.name, r.name);
         // u.name -> r.name;
-        printf("sender%s\tfichier:%s", r.accountNbr, cr.accountNbr);
-        if (strcmp(r.accountNbr, cr.accountNbr) == 0 && strcmp(u.name,cr.name))
+        // printf("sender%s\tfichier:%s", r.accountNbr, cr.accountNbr);
+        if (strcmp(r.accountNbr, cr.accountNbr) == 0 && strcmp(u.name,r.name)==0)
         {
             switch (choice)
             {
@@ -282,11 +284,23 @@ void Modify(struct Record cr, int choice)
                 break;
             }
         }
-        else
+        else if (!(strcmp(r.accountNbr, cr.accountNbr) == 0 && strcmp(u.name,r.name)==0))
         {
-
-            saveAccountToFile(newFILE, u, r);
+              fprintf(newFILE, "%d %d %s %s %02d/%02d/%d %s %s %s %s\n\n",
+            r.id,
+            r.userId,
+            r.name,
+            r.accountNbr,
+            r.deposit.month,
+            r.deposit.day,
+            r.deposit.year,
+            r.country,
+            r.phone,
+            r.amount,
+            r.accountType);
         }
+        
+     
     }
     fclose(pf);
     fclose(newFILE);
@@ -321,10 +335,10 @@ void UpdateAccount(struct User u)
                         switch (choice)
                         {
                         case 1:
-                            Modify(r, choice);
+                            Modify(u,r, choice);
                             break;
                         case 2:
-                            Modify(r, choice);
+                            Modify(u,r, choice);
                             break;
                         default:
                             break;
@@ -383,7 +397,7 @@ void CheckAccount(struct User u)
                 {
                     boole = 1;
                     printf("Account Number : %s\nDeposit Date: %d/%d/%d\n Country : %s\n Phone Number : %s\n Amount Deposited %s \n Type of Account: %s",
-                           r.accountNbr, r.deposit.month, r.deposit.day, r.deposit.year, r.country, r.phone, r.amount, r.accountType);
+                           cr.accountNbr, cr.deposit.month, cr.deposit.day, cr.deposit.year, cr.country, cr.phone, cr.amount, cr.accountType);
                      fclose(pf);
                     success(u);
                 }
