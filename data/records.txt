@@ -1,4 +1,4 @@
-0 1 Alice 0 10/10/2012 chibouhaaaaaaaaaaaaaaaaaaaaaaaa 77542358429548258425842 22432.52 58425842
+0 1 Alice 0 10/10/2012 chibouhaaaaaaaaaaaaaaaaaaaaaaaa 7743123453221 22432.52 saving
 
 1 1 Michel 2 02/05/2001 Portugal 123543455 10023.230000 fixed01
 

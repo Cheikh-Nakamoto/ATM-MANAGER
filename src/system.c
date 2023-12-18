@@ -262,13 +262,23 @@ void Modify(struct User u,struct Record cr, int choice)
             switch (choice)
             {
             case 1:
+            do
+            {
                 printf("Enter the new phone number:");
                 scanf("%s", r.phone);
-                if (!IntVerify(r.phone))
+                if (!IntVerify(r.phone)|| strlen(r.phone)>14)
                 {
-                    printf("✖ Phone number is not valid\n\n");
-                }
+                    printf("✖ Phone number is not valid\n\n");}
+            } while (!IntVerify(r.phone)|| strlen(r.phone)>14);
+            
+                // printf("Enter the new phone number:");
+                // scanf("%s", r.phone);
+                // if (!IntVerify(r.phone)|| strlen(r.phone)>25)
+                // {
+                //     printf("✖ Phone number is not valid\n\n");
+                // }else{
                 saveAccountToFile(newFILE, u, r);
+                // }
                 break;
             case 2:
                 do
